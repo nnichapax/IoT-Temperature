@@ -22,8 +22,9 @@ app.get('/', (req, res) => {
 
 // ==========================================
 // POST /api/telemetry
-// ESP32 ส่งแค่ device_id + temperature_c
-// API จะสร้าง id และ seq เอง
+// ESP32 ส่ง device_id + temperature_c
+// API จะสร้าง seq
+// Supabase จะสร้าง id
 // ==========================================
 app.post('/api/telemetry', async (req, res) => {
 
@@ -57,43 +58,17 @@ app.post('/api/telemetry', async (req, res) => {
 
 
         // ==========================================
-        // หา ID ล่าสุด
-        // ==========================================
-        const { data: latestIdData, error: idError } =
-            await supabase
-                .from('telemetry')
-                .select('id')
-                .order('id', { ascending: false })
-                .limit(1)
-                .maybeSingle();
-
-        if (idError) {
-            return res.status(500).json({
-                success: false,
-                message: 'Failed to get latest id',
-                error: idError.message
-            });
-        }
-
-
-        // ถ้าไม่มีข้อมูล → เริ่ม 1
-        // ถ้ามี → MAX(id) + 1
-        const newId =
-            latestIdData?.id != null
-                ? Number(latestIdData.id) + 1
-                : 1;
-
-
-        // ==========================================
         // หา seq ล่าสุด
         // ==========================================
         const { data: latestSeqData, error: seqError } =
             await supabase
                 .from('telemetry')
                 .select('seq')
+                .eq('device_id', device_id.trim())
                 .order('seq', { ascending: false })
                 .limit(1)
                 .maybeSingle();
+
 
         if (seqError) {
             return res.status(500).json({
@@ -104,8 +79,8 @@ app.post('/api/telemetry', async (req, res) => {
         }
 
 
-        // ถ้าไม่มีข้อมูล → เริ่ม 1
-        // ถ้ามี → MAX(seq) + 1
+        // ถ้าไม่มีข้อมูล → seq = 1
+        // ถ้ามี → seq ล่าสุด + 1
         const newSeq =
             latestSeqData?.seq != null
                 ? Number(latestSeqData.seq) + 1
@@ -114,12 +89,13 @@ app.post('/api/telemetry', async (req, res) => {
 
         // ==========================================
         // INSERT
+        // ไม่ส่ง id
+        // Supabase/PostgreSQL สร้าง id ให้อัตโนมัติ
         // ==========================================
         const { data, error } = await supabase
             .from('telemetry')
             .insert([
                 {
-                    id: newId,
                     device_id: device_id.trim(),
                     temperature_c: temperature_c,
                     seq: newSeq
@@ -165,7 +141,6 @@ app.post('/api/telemetry', async (req, res) => {
 
 // ==========================================
 // GET /api/telemetry
-// ดูข้อมูลล่าสุด
 // ==========================================
 app.get('/api/telemetry', async (req, res) => {
 
