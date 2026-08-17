@@ -1,0 +1,29 @@
+{
+  "name": "temperature_v.2",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000I\u0000o\u0000T\u0000-\u0000T\u0000e\u0000m\u0000p\u0000e\u0000r\u0000a\u0000t\u0000u\u0000r\u0000e\u0000\r\u0000 \u0000",
+  "main": "Server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nnichapax/IoT-Temperature.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/nnichapax/IoT-Temperature/issues"
+  },
+  "homepage": "https://github.com/nnichapax/IoT-Temperature#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.112.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "nodemon": "^3.1.14"
+  }
+}
